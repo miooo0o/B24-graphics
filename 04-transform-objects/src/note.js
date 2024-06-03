@@ -15,32 +15,34 @@ const scene = new THREE.Scene()
 /**
  * Objects
  */
+const geometry = new THREE.BoxGeometry(1, 1, 1)
+const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+const mesh = new THREE.Mesh(geometry, material)
+scene.add(mesh)
 
-const group = new THREE.Group()
-scene.add(group)
+// Position
+mesh.position.set(0.7, -0.6, 1)
 
-// group.position.y = 1
-// group.rotation.x = 1
+// Scale
+mesh.scale.set(2, 0.5, 0.5)
 
-const cub1 = new THREE.Mesh(
-	new THREE.BoxGeometry(1, 1, 1),
-	new THREE.MeshBasicMaterial({ color: 0xff0000 })
-)
-const cub2 = new THREE.Mesh(
-	new THREE.BoxGeometry(1, 1, 1),
-	new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-)
-cub2.position.x = -2
 
-const cub3 = new THREE.Mesh(
-	new THREE.BoxGeometry(1, 1, 1),
-	new THREE.MeshBasicMaterial({ color: 0x0000ff })
-)
-cub3.position.x = 2
-
-group.add(cub1)
-group.add(cub2)
-group.add(cub3)
+/**
+ * Euler		Euler Angles
+ * @function	rotation.reorder
+ * @description	Reorders the Euler angles to a specified order to prevent gimbal lock.
+ *				Gimbal lock occurs when the rotation around one axis aligns with another,
+ *				causing a loss of one degree of freedom in the rotation system.
+ * 				By reordering the Euler angles, you can avoid this problem and ensure
+ *				that the rotation behaves as expected.
+ *				- update quaternion
+ * 
+ * @param {string} order -	The new order of the Euler angles. It must be one of the following: 
+ *							'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX'.
+ */
+mesh.rotation.reorder('YXZ')
+mesh.rotation.x = Math.PI * 0.25
+mesh.rotation.y = Math.PI * 0.25
 
 /**
  * Axes helper
@@ -77,6 +79,8 @@ const sizes = {
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height)
 camera.position.z = 3
 scene.add(camera)
+
+camera.lookAt(mesh.position)
 
 /**
  * Renderer
