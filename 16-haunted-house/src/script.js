@@ -16,21 +16,64 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 /**
+ * textures
+ */
+const textureLoader = new THREE.TextureLoader()
+
+// floor
+const floorAlphaTexture = textureLoader.load("./floor/alpha.jpg")
+const floorColorTexture = textureLoader.load('./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_diff_1k.jpg')
+const floorARMTexture = textureLoader.load('./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_arm_1k.jpg')
+const floorNormalTexture = textureLoader.load('./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_nor_gl_1k.jpg')
+const floorDisplacementTexture = textureLoader.load('./floor/coast_sand_rocks_02_1k/coast_sand_rocks_02_disp_1k.jpg')
+
+floorColorTexture.colorSpace = THREE.SRGBColorSpace
+floorColorTexture.repeat.set(8, 8)
+floorColorTexture.wrapS = THREE.RepeatWrapping
+floorColorTexture.wrapT = THREE.RepeatWrapping
+
+floorARMTexture.repeat.set(8, 8)
+floorARMTexture.wrapS = THREE.RepeatWrapping
+floorARMTexture.wrapT = THREE.RepeatWrapping
+
+floorNormalTexture.repeat.set(8, 8)
+floorNormalTexture.wrapS = THREE.RepeatWrapping
+floorNormalTexture.wrapT = THREE.RepeatWrapping
+
+floorDisplacementTexture.repeat.set(8, 8)
+floorDisplacementTexture.wrapS = THREE.RepeatWrapping
+floorDisplacementTexture.wrapT = THREE.RepeatWrapping
+
+/**
  * House
  */
 const houseMeasurments = {
-    width:  4,
-    height: 2.5,
-    depth:  4
+	width:  4,
+	height: 2.5,
+	depth:  4
 }
 
 const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 20),
-    new THREE.MeshStandardMaterial()
+	new THREE.PlaneGeometry(20, 20, 100, 100),
+	new THREE.MeshStandardMaterial({
+		alphaMap: floorAlphaTexture,
+		transparent: true,
+		map: floorColorTexture,
+		aoMap: floorARMTexture,
+		roughnessMap: floorARMTexture,
+		metalnessMap: floorARMTexture,
+		normalMap: floorNormalTexture,
+		displacementMap: floorDisplacementTexture,
+		displacementScale: 0.35,
+		displacementBias: -0.2
+	}),
 )
 
 floor.rotation.x = - Math.PI * 0.5
 scene.add(floor)
+
+gui.add(floor.material, 'displacementScale').min(0).max(1).step(0.001).name("floorDisplacementScale")
+gui.add(floor.material, 'displacementBias').min(-1).max(1).step(0.001).name("floorDisplacementBias")
 
 // house group
 const house = new THREE.Group()
@@ -38,23 +81,23 @@ scene.add(house)
 
 // walls
 const walls = new THREE.Mesh(
-    new THREE.BoxGeometry(houseMeasurments.width, houseMeasurments.height, houseMeasurments.depth),
-    new THREE.MeshStandardMaterial()
+	new THREE.BoxGeometry(houseMeasurments.width, houseMeasurments.height, houseMeasurments.depth),
+	new THREE.MeshStandardMaterial()
 )
 walls.position.y += houseMeasurments.height * 0.5
 house.add(walls)
 
 // roof
 const roofMeasurment = {
-    height:         1.5,
-    radialSegments: 4,
-    radius:         3.5
+	height:         1.5,
+	radialSegments: 4,
+	radius:         3.5
 
 }
 
 const roof = new THREE.Mesh(
-    new THREE.ConeGeometry(roofMeasurment.radius, roofMeasurment.height, roofMeasurment.radialSegments),
-    new THREE.MeshStandardMaterial()
+	new THREE.ConeGeometry(roofMeasurment.radius, roofMeasurment.height, roofMeasurment.radialSegments),
+	new THREE.MeshStandardMaterial()
 )
 roof.position.y += houseMeasurments.height + roofMeasurment.height * 0.5
 roof.rotation.y = Math.PI * 0.25
@@ -62,8 +105,8 @@ house.add(roof)
 
 // door
 const door = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.2, 2.2),
-    new THREE.MeshStandardMaterial()
+	new THREE.PlaneGeometry(2.2, 2.2),
+	new THREE.MeshStandardMaterial()
 )
 
 door.position.y = 1
@@ -97,9 +140,9 @@ house.add(bush1, bush2, bush3, bush4)
 // Graves
 const graveMeasurments = 
 {
-    width:  0.6,
-    height: 0.8,
-    depth:  0.2
+	width:  0.6,
+	height: 0.8,
+	depth:  0.2
 }
 
 const graveGeometry = new THREE.BoxGeometry(graveMeasurments.width, graveMeasurments.height, graveMeasurments.depth)
@@ -111,22 +154,22 @@ scene.add(graves)
 for (let i = 0; i < 30; i++)
 {
   const angle = Math.random() * Math.PI * 2
-    const radius = houseMeasurments.width - 1 + Math.random() * 4
-    const x = Math.sin(angle) * radius
-    const z = Math.cos(angle) * radius
+	const radius = houseMeasurments.width - 1 + Math.random() * 4
+	const x = Math.sin(angle) * radius
+	const z = Math.cos(angle) * radius
 
-    // Mesh
-    const grave = new THREE.Mesh(graveGeometry, graveMaterial)
-    grave.position.x = x
-    grave.position.y = Math.random() * graveMeasurments.height * 0.5
-    grave.position.z = z
+	// Mesh
+	const grave = new THREE.Mesh(graveGeometry, graveMaterial)
+	grave.position.x = x
+	grave.position.y = Math.random() * graveMeasurments.height * 0.5
+	grave.position.z = z
 
-    grave.rotation.x = (Math.random() - 0.5) * 0.4
-    grave.rotation.y = (Math.random() - 0.5) * 0.4
-    grave.rotation.z = (Math.random() - 0.5) * 0.4
+	grave.rotation.x = (Math.random() - 0.5) * 0.4
+	grave.rotation.y = (Math.random() - 0.5) * 0.4
+	grave.rotation.z = (Math.random() - 0.5) * 0.4
 
-    // add to graves group
-    graves.add(grave)
+	// add to graves group
+	graves.add(grave)
 }
 
 /**
@@ -145,23 +188,23 @@ scene.add(directionalLight)
  * Sizes
  */
 const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight
+	width: window.innerWidth,
+	height: window.innerHeight
 }
 
 window.addEventListener('resize', () =>
 {
-    // Update sizes
-    sizes.width = window.innerWidth
-    sizes.height = window.innerHeight
+	// Update sizes
+	sizes.width = window.innerWidth
+	sizes.height = window.innerHeight
 
-    // Update camera
-    camera.aspect = sizes.width / sizes.height
-    camera.updateProjectionMatrix()
+	// Update camera
+	camera.aspect = sizes.width / sizes.height
+	camera.updateProjectionMatrix()
 
-    // Update renderer
-    renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+	// Update renderer
+	renderer.setSize(sizes.width, sizes.height)
+	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
 /**
@@ -182,7 +225,7 @@ controls.enableDamping = true
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
+	canvas: canvas
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -194,18 +237,18 @@ const timer = new Timer()
 
 const tick = () =>
 {
-    // Timer
-    timer.update()
-    const elapsedTime = timer.getElapsed()
+	// Timer
+	timer.update()
+	const elapsedTime = timer.getElapsed()
 
-    // Update controls
-    controls.update()
+	// Update controls
+	controls.update()
 
-    // Render
-    renderer.render(scene, camera)
+	// Render
+	renderer.render(scene, camera)
 
-    // Call tick again on the next frame
-    window.requestAnimationFrame(tick)
+	// Call tick again on the next frame
+	window.requestAnimationFrame(tick)
 }
 
 tick()
