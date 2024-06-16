@@ -44,6 +44,44 @@ floorDisplacementTexture.repeat.set(8, 8)
 floorDisplacementTexture.wrapS = THREE.RepeatWrapping
 floorDisplacementTexture.wrapT = THREE.RepeatWrapping
 
+// walls
+const wallColorTexture = textureLoader.load('./wall/castle_brick_broken_06_1k/castle_brick_broken_06_diff_1k.jpg')
+const wallARMTexture = textureLoader.load('./wall/castle_brick_broken_06_1k/castle_brick_broken_06_arm_1k.jpg')
+const wallNormalTexture = textureLoader.load('./wall/castle_brick_broken_06_1k/castle_brick_broken_06_nor_gl_1k.jpg')
+
+wallColorTexture.colorSpace = THREE.SRGBColorSpace
+
+
+// roof
+const roofColorTexture = textureLoader.load('./roof/roof_slates_02_1k/roof_slates_02_diff_1k.jpg')
+const roofARMTexture = textureLoader.load('./roof/roof_slates_02_1k/roof_slates_02_arm_1k.jpg')
+const roofNormalTexture = textureLoader.load('./roof/roof_slates_02_1k/roof_slates_02_nor_gl_1k.jpg')
+
+roofColorTexture.colorSpace = THREE.SRGBColorSpace
+
+roofColorTexture.repeat.set(3, 1)
+roofARMTexture.repeat.set(3, 1)
+roofNormalTexture.repeat.set(3, 1)
+
+roofColorTexture.wrapS = THREE.RepeatWrapping
+roofARMTexture.wrapS = THREE.RepeatWrapping
+roofNormalTexture.wrapS = THREE.RepeatWrapping
+
+// bush
+const bushColorTexture = textureLoader.load('./bush/leaves_forest_ground_1k/leaves_forest_ground_diff_1k.jpg')
+const bushARMTexture = textureLoader.load('./bush/leaves_forest_ground_1k/leaves_forest_ground_arm_1k.jpg')
+const bushNormalTexture = textureLoader.load('./bush/leaves_forest_ground_1k/leaves_forest_ground_nor_gl_1k.jpg')
+
+bushColorTexture.colorSpace = THREE.SRGBColorSpace
+
+bushColorTexture.repeat.set(2, 1)
+bushARMTexture.repeat.set(2, 1)
+bushNormalTexture.repeat.set(2, 1)
+
+bushColorTexture.wrapS = THREE.RepeatWrapping
+bushARMTexture.wrapS = THREE.RepeatWrapping
+bushNormalTexture.wrapS = THREE.RepeatWrapping
+
 /**
  * House
  */
@@ -66,7 +104,7 @@ const floor = new THREE.Mesh(
 		displacementMap: floorDisplacementTexture,
 		displacementScale: 0.35,
 		displacementBias: -0.2
-	}),
+	})
 )
 
 floor.rotation.x = - Math.PI * 0.5
@@ -82,7 +120,13 @@ scene.add(house)
 // walls
 const walls = new THREE.Mesh(
 	new THREE.BoxGeometry(houseMeasurments.width, houseMeasurments.height, houseMeasurments.depth),
-	new THREE.MeshStandardMaterial()
+	new THREE.MeshStandardMaterial({
+		map: wallColorTexture,
+		aoMap: wallARMTexture,
+		roughnessMap: wallARMTexture,
+		metalnessMap: wallARMTexture,
+		normalMap: wallNormalTexture
+	})
 )
 walls.position.y += houseMeasurments.height * 0.5
 house.add(walls)
@@ -97,7 +141,13 @@ const roofMeasurment = {
 
 const roof = new THREE.Mesh(
 	new THREE.ConeGeometry(roofMeasurment.radius, roofMeasurment.height, roofMeasurment.radialSegments),
-	new THREE.MeshStandardMaterial()
+	new THREE.MeshStandardMaterial({
+		map: roofColorTexture,
+		aoMap: roofARMTexture,
+		roughnessMap: roofARMTexture,
+		metalnessMap: roofARMTexture,
+		normalMap: roofNormalTexture
+	})
 )
 roof.position.y += houseMeasurments.height + roofMeasurment.height * 0.5
 roof.rotation.y = Math.PI * 0.25
@@ -115,25 +165,34 @@ house.add(door)
 
 // Bushes
 const bushGeometyry = new THREE.SphereGeometry(1, 16, 16)
-const bushMaterial = new THREE.MeshStandardMaterial()
+const bushMaterial = new THREE.MeshStandardMaterial({
+	color: "#ccffcc",
+	map: bushColorTexture,
+	aoMap: bushARMTexture,
+	roughnessMap: bushARMTexture,
+	metalnessMap: bushARMTexture,
+	normalMap: bushNormalTexture
+})
 
 const bush1 = new THREE.Mesh(bushGeometyry, bushMaterial)
 bush1.scale.setScalar(0.5)
 bush1.position.set(0.8, 0.2, 2.2)
-
+bush1.rotation.x = -0.75
 
 const bush2 = new THREE.Mesh(bushGeometyry, bushMaterial)
 bush2.scale.setScalar(0.25)
 bush2.position.set(1.4, 0.1, 2.1)
-
+bush2.rotation.x = -0.75
 
 const bush3 = new THREE.Mesh(bushGeometyry, bushMaterial)
 bush3.scale.setScalar(0.4)
 bush3.position.set(-0.8, 0.1, 2.2)
+bush3.rotation.x = -0.75
 
 const bush4 = new THREE.Mesh(bushGeometyry, bushMaterial)
 bush4.scale.setScalar(0.15)
 bush4.position.set(-1, 0.05, 2.6)
+bush4.rotation.x = -0.75
 
 house.add(bush1, bush2, bush3, bush4)
 
